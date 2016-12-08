@@ -1,3 +1,5 @@
 packages
 TestResults
 Web.config
+bin
+obj

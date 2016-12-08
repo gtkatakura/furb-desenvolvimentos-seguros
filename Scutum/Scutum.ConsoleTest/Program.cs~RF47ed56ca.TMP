@@ -1,0 +1,19 @@
+﻿using Itenso.TimePeriod;
+using RestSharp;
+using Scutum.ConsoleTest.Serializers;
+using Scutum.WebAPI;
+using System;
+using System.IO;
+using System.Net;
+using System.Web.Http.SelfHost;
+
+namespace Scutum.ConsoleTest
+{
+    internal class Program
+    {
+        private static void Main(string[] args)
+        {
+            Console.ReadKey();
+        }
+    }
+}
