@@ -1,7 +1,9 @@
-﻿using Scutum.Model;
+﻿using Scutum.Infra.MongoDB;
+using Scutum.Model;
 using Scutum.Model.Enumerator;
 using System;
 using System.Data.Entity;
+using System.Linq;
 
 namespace Scutum.Infra.Context.Strategy
 {
@@ -9,6 +11,43 @@ namespace Scutum.Infra.Context.Strategy
     // DropCreateDatabaseAlways
     public class ScutumDbInitializer : CreateDatabaseIfNotExists<ScutumContext>
     {
+        private static bool Normalized = false;
+
+        public void NormalizeUsers(ScutumContext context)
+        {
+            if (!Normalized)
+            {
+                var usuarioRepository = new UsuarioRepositoryMongo();
+
+                var usuarios = context.Usuarios.ToArray();
+
+                foreach (var usuario in usuarios)
+                {
+                    var usuarioCache = usuarioRepository.Find(usuario.Id);
+                    
+                    if (usuarioCache == null)
+                    {
+                        context.Usuarios.Remove(usuario);
+                    }
+                    else if (usuario.Nivel != usuarioCache.Nivel ||
+                        usuario.Nome != usuarioCache.Nome ||
+                        usuario.SenhaHashed != usuarioCache.SenhaHashed)
+                    {
+                        usuario.Nivel = usuarioCache.Nivel;
+                        usuario.Nome = usuarioCache.Nome;
+                        usuario.SenhaHashed = usuarioCache.SenhaHashed;
+
+                        context.Usuarios.Attach(usuario);
+                        context.Entry(usuario).State = EntityState.Modified;
+                    }
+                }
+
+                context.SaveChanges();
+
+                Normalized = true;
+            }
+        }
+
         protected override void Seed(ScutumContext context)
         {
             var admin = new Usuario
@@ -65,6 +104,8 @@ namespace Scutum.Infra.Context.Strategy
                 Descricao = "Primeira Providência - Descrição (DbInitializer)"
             };
 
+            var usuarioRepository = new UsuarioRepositoryMongo();
+
             context.Usuarios.Add(admin);
             context.Usuarios.Add(atendente);
 
@@ -77,6 +118,9 @@ namespace Scutum.Infra.Context.Strategy
             context.Providencias.Add(providencia1);
 
             context.SaveChanges();
+
+            usuarioRepository.Save(admin);
+            usuarioRepository.Save(atendente);
 
             base.Seed(context);
         }

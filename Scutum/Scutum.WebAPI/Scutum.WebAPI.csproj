@@ -129,6 +129,7 @@
     <Compile Include="Config\MessageHandlers\ResponseDataFilterHandler.cs" />
     <Compile Include="Config\Services\ExceptionTextLogger.cs" />
     <Compile Include="Controllers\CartaoCreditosController.cs" />
+    <Compile Include="Controllers\UsuariosController.cs" />
     <Compile Include="Logging\NLogger.cs" />
     <Compile Include="Config\MessageHandlers\HeadHttpHandler.cs" />
     <Compile Include="Config\MessageHandlers\OptionsHttpHandler.cs" />

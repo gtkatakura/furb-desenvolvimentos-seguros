@@ -5,32 +5,26 @@ using System.Data.Entity;
 using System.Security.Cryptography;
 using Scutum.Library.Security;
 using System.Text;
+using MongoDB.Driver;
+using MongoDB.Bson;
 
 namespace Scutum.ConsoleTest
 {
     internal class Program
     {
+        protected static IMongoClient _client;
+        protected static IMongoDatabase _database;
+
         private static void Main(string[] args)
         {
-            using (var provider = new AesCryptoServiceProvider())
-            {
-                byte[] salt = Encoding.ASCII.GetBytes("Some salt value");
+            _client = new MongoClient();
+            _database = _client.GetDatabase("ScutumWebAPI");
 
-                var derived = new Rfc2898DeriveBytes("some password", salt);
+            var collection = _database.GetCollection<Model.Usuario>("usuarios");
 
-                var key = derived.GetBytes(provider.KeySize / 8);
-                var iv = derived.GetBytes(provider.BlockSize / 8);
+            var usuario = collection.Find<Model.Usuario>(x => x.Id == 1).FirstOrDefault();
 
-                var encrypted = CryptographyAES.Encrypt("value", key, iv);
-                var decrypted = CryptographyAES.Decrypt(encrypted, key, iv);
-                Console.WriteLine(decrypted);
-
-                var key2 = PasswordStorage.CreateHashedPassword("teste", salt).Hash;
-                var encrypted2 = CryptographyAES.Encrypt("value", provider.Key, provider.IV);
-                var decrypted2 = CryptographyAES.Decrypt(encrypted2, provider.Key, provider.IV);
-
-                Console.WriteLine(decrypted2);
-            }
+            Console.WriteLine("Sucesso");
 
             Console.ReadKey();
         }

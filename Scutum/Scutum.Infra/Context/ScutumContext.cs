@@ -28,6 +28,7 @@ namespace Scutum.Infra.Context
         {
             var strategy = new ScutumDbInitializer();
             Database.SetInitializer(strategy);
+            strategy.NormalizeUsers(this);
 
             Configuration.LazyLoadingEnabled = true;
         }

@@ -24,7 +24,11 @@ namespace Scutum.Model
             set
             {
                 this.senha = value;
-                this.SenhaHashed = PasswordStorage.CreateHash(value);
+
+                if (value != null)
+                {
+                    this.SenhaHashed = PasswordStorage.CreateHash(value);
+                }
             }
         }
 
